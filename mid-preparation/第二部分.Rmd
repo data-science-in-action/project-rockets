@@ -1,0 +1,16 @@
+---
+title: "R软件操作"
+author: "董洁"
+output:
+  ioslides_presentation: 
+    widescreen: true
+    bigger: true
+mathjax: local
+pagemargins: 2.5
+fontsize: 12
+---
+
+## **互相关关系**
+
+
+
