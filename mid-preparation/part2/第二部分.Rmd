@@ -59,8 +59,8 @@ $$
 预白化（pre-whitening)  
 &ensp;&ensp;&ensp;&ensp;CCF受x变量的时间序列结构以及x和y序列随时间的任何“共同”趋势的影响。   &ensp;&ensp;&ensp;&ensp;解决这一难题的一种方法称为“预白化”。这些步骤是：  
 &ensp;&ensp;&ensp;&ensp;1.确定x变量的时间序列模型，并存储该模型的残差。  
-&ensp;&ensp;&ensp;&ensp;2.使用x变量模型（使用步骤1中的估计系数）过滤y变量序列。在这一步中，我们发现基于x变量模型的观测y值与“估计” y值之间的差异。  
-&ensp;&ensp;&ensp;&ensp;3.检查步骤1的残差和步骤2的y值之间的CCF 。  
+&ensp;&ensp;&ensp;&ensp;2.使用x变量模型（使用步骤1中的估计系数）过滤y变量序列。在这一步中，我们发现基于第2步得到的y序列与原始 y值之间存在差异。  
+&ensp;&ensp;&ensp;&ensp;3.计算步骤1的残差和步骤2的y值之间的CCF 。  
 
 
 

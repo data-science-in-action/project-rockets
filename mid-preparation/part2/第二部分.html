@@ -3164,7 +3164,7 @@ cov(x_{t},y_{s})=E[(x_{t}-\mu_{x})(y_{s}-\mu_{y})]
 
 </article></slide><slide class=""><hgroup><h2><strong>预白化</strong></h2></hgroup><article  id="预白化">
 
-<p>预白化（pre-whitening)<br/>    CCF受x变量的时间序列结构以及x和y序列随时间的任何&ldquo;共同&rdquo;趋势的影响。     解决这一难题的一种方法称为&ldquo;预白化&rdquo;。这些步骤是：<br/>    1.确定x变量的时间序列模型，并存储该模型的残差。<br/>    2.使用x变量模型（使用步骤1中的估计系数）过滤y变量序列。在这一步中，我们发现基于x变量模型的观测y值与&ldquo;估计&rdquo; y值之间的差异。<br/>    3.检查步骤1的残差和步骤2的y值之间的CCF 。</p></article></slide>
+<p>预白化（pre-whitening)<br/>    CCF受x变量的时间序列结构以及x和y序列随时间的任何&ldquo;共同&rdquo;趋势的影响。     解决这一难题的一种方法称为&ldquo;预白化&rdquo;。这些步骤是：<br/>    1.确定x变量的时间序列模型，并存储该模型的残差。<br/>    2.使用x变量模型（使用步骤1中的估计系数）过滤y变量序列。在这一步中，我们发现基于第2步得到的y序列与原始 y值之间存在差异。<br/>    3.计算步骤1的残差和步骤2的y值之间的CCF 。</p></article></slide>
 
 
   <slide class="backdrop"></slide>
