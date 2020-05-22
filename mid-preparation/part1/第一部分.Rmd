@@ -1,0 +1,55 @@
+---
+title: "离汉人员对新冠疫情的影响分析"
+author: "虞睿灵 董洁 常佳琪"
+date: "2020/5/22"
+output:
+  ioslides_presentation: 
+    widescreen: true
+    bigger: true
+mathjax: local
+pagemargins: 2.5
+fontsize: 12
+---
+
+## **展示内容**
+
+### <font size=6>**1.绪论**</font>
+
+### <font size=6>**2.理论分析—CCF介绍**</font>
+
+### <font size=6>**3.现阶段成果及展望**</font>
+
+
+# 1. 绪论
+
+## 1.绪论
+
+### <font size=6>**1.1 选题背景**</font>
+
+### <font size=6>**1.2 研究思路**</font>
+
+## **1.1 选题背景**
+<div align=center><img width='900' height='500'src='./graph/time.png'/></div>
+
+## **1.1 选题背景**
+<div align=center><img width='900' height='250'src='./graph/outflow1.png'/></div>
+<div align=center><img width='900' height='250'src='./graph/outflow2.png'/></div>
+
+
+## **1.1 选题背景**
+
+2019新型冠状病毒肺炎于2019年12月在湖北省武汉市出现，其显著的人传人特性伴随着高密度的人口流动导致病毒迅速蔓延，构成了全球突发公共卫生事件。为有效防控疫情，武汉于2020年1月23日下达封城令，离汉通道全部关闭。  
+<br/>
+由于疫情初期，正值中国大规模迁徙的春运时期，武汉作为中国中部交通和工业的枢纽,人流量巨大，上百万群众在封城令实施前已离开武汉，大量潜伏的新冠病毒也随着这上百万的离汉人员分散到全国各地，因此我们初步认为大量武汉人员的迁出对中国其他地区的疫情传播存在影响。  
+<br/>
+本次研究旨在分析疫情初期离汉人员与其他30个省市自治区疫情的相关关系，同时评估武汉封城这一政策干预对疫情发展的效果。  
+<br/>
+<center><big>**大量潜伏确诊病例+大量离汉人员→离汉人员对其他各省疫情产生影响**</big></center>
+
+
+## **1.2 研究思路**
+<div align=center><img width='600' height='400'src='./graph/research_thought.png'/></div>
+
+
+
+
