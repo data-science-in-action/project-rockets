@@ -51,27 +51,20 @@ $(1-B)^2$ $y_{t}$ - 0.8868$e_{t}$
 
 ## **3.3 结果展示**  
 ```{r ,include = FALSE}
-setwd("C:/Users/cbb/Desktop/anlidasai/zy/project-rockets/mid-preparation/part3/data")
 library(jsonlite);library(rjson);library(RJSONIO)
 library(ggplot2);library(RColorBrewer);library(lubridate)
 library(plyr);library(dplyr);library(rgdal)
 library(sf);library(geojsonio);library(sp);library(ggthemes)
-
-x<-readOGR("省级行政区.shp",stringsAsFactors=FALSE,encoding="UTF-8")
-
+x<-readOGR("./data/省级行政区.shp",stringsAsFactors=FALSE,encoding="UTF-8")
 prov_map<-fortify(x)
-
-des_map=read.csv("des_map.csv")
-
+des_map=read.csv("./data/des_map.csv")
 totalp=data.frame(id=des_map$id,pnum=des_map$lag,
                   Timelag=cut(des_map$lag,breaks=c(0,8,15,22,35),
                   labels=c("<7","8-14","15-21",">=22"),
                   order = TRUE,include.lowest = T,right = F))
-
 ttp<-merge.data.frame(prov_map,totalp,by.prov_map="id",by.totalp="id")
 ```
 
-## **3.3 结果展示**  
 ```{r ,echo=FALSE,eval=T}
 ggplot()+
   geom_polygon(data=ttp,aes(x=long,y=lat,group=group,
@@ -115,10 +108,9 @@ ggplot()+
 
 ## **3.3 结果展示**  
 ```{r ,echo=FALSE,eval=T}
-setwd("C:/Users/cbb/Desktop/anlidasai/zy/project-rockets/mid-preparation/part3/data")
 library(ggplot2); library(ggrepel)
 
-data <- read.csv("plot.csv")
+data <- read.csv("./data/plot.csv")
 ggplot(data)+ geom_point(aes(lag, ccf), color="grey", size=3)+
   geom_label_repel(aes(lag, ccf, fill=factor(Province.cluster), 
                        label=id), fontface="bold", color="white", 
