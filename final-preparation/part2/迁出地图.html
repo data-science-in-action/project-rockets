@@ -1,0 +1,217 @@
+<html>
+  <head>
+  <meta charset="utf-8">
+  <style type="text/css">
+  body {
+  margin: 0;
+  }
+  #main {
+  height: 100%;
+  }
+  </style>
+  </head>
+  <body>
+  <div id="main"></div>
+  <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+  <script src = "http://echarts.baidu.com/build/dist/echarts-all.js"></script>
+  <script>
+  var myChart = echarts.init(document.getElementById("main"));
+
+  var optionID_20200603192233_1067934 = 
+{
+  backgroundColor: '#1b1b1b',
+  color: ['gold','aqua','lime'],
+  title : {
+    text: '2020年1月10日至2020年2月29日 武汉人口迁出图',
+    subtext:'前10目标省份',
+    x:'center',
+    textStyle : {
+      color: '#fff'
+    }
+  },
+  tooltip : {
+    trigger: 'item',
+    formatter: function (v) {
+			if(typeof(v[2])=='number'){
+			return(v[1]+': '+v[2])
+			}else if(v[2].tooltipValue!=null){
+          	return v[2].tooltipValue;
+          }else{
+            return v[1];
+          }
+  }},
+    legend: {
+        show:false,
+        orient: 'vertical',
+        x:'left',
+        data:['Data'],
+      	textStyle:{color:'#1b1b1b'}
+
+    },
+  toolbox: {
+    show : true,
+    orient : 'vertical',
+    x: 'right',
+    y: 'center',
+    feature : {
+      mark : {show: true},
+      dataView : {show: true, readOnly: false},
+      restore : {show: true},
+      saveAsImage : {show: true}
+    }
+  },
+  dataRange: {
+    min : -19400,
+    max : 310397,
+    calculable : true,
+    color: ['#CD0000', '#FFEC8B'],
+    textStyle:{
+      color:'#fff'
+    }
+  },
+  series : [
+    {
+    name:'Data',
+    type:'map',
+    mapType: 'china',
+    itemStyle:{
+    normal:{
+    borderColor:'rgba(100,149,237,1)',
+    borderWidth: 0.5,
+    label:{show:true,textStyle:{color:'#fff'}},
+    },
+    emphasis:{label:{show:true,textStyle:{color:'#fff'}}}
+  },
+  data:[{name:'河南',value:290996.744},
+		{name:'湖南',value:180355.862},
+		{name:'安徽',value:116565.380},
+		{name:'江西',value:108285.729},
+		{name:'广东',value:102738.092},
+		{name:'江苏',value: 75368.932},
+		{name:'重庆',value: 64528.089},
+		{name:'四川',value: 63233.982},
+		{name:'山东',value: 55996.455},
+		{name:'浙江',value: 54839.469},
+		{name:'河北',value: 47177.399},
+		{name:'福建',value: 45952.965},
+		{name:'北京',value: 43869.785},
+		{name:'广西',value: 40184.464},
+		{name:'陕西',value: 37055.955},
+		{name:'上海',value: 34001.749},
+		{name:'山西',value: 30993.800},
+		{name:'贵州',value: 28003.303},
+		{name:'云南',value: 26862.433},
+		{name:'海南',value: 19416.686},
+		{name:'甘肃',value: 17644.122},
+		{name:'辽宁',value: 16742.458},
+		{name:'黑龙江',value: 14159.764},
+		{name:'新疆',value: 10219.789},
+		{name:'内蒙古',value:  9137.374},
+		{name:'吉林',value:  8721.379},
+		{name:'天津',value:  7645.731},
+		{name:'宁夏',value:  4131.679},
+		{name:'青海',value:     0.000},
+		{name:'西藏',value:     0.000},
+		{name:'香港',value:     0.000},
+		{name:'澳门',value:     0.000},
+		{name:'台湾',value:     0.000}]
+  
+  ,markLine : {
+    Symbol:['none', 'arrow'],
+    symbolSize:['2', '4'],
+    smooth:true,
+    smooth:0.2,
+    effect : {
+      show: true,
+      scaleSize: 1,
+      period: 30,
+      color: '#fff',
+      shadowBlur: 10
+    },
+    itemStyle : {
+      color: 'red',
+      normal: {
+        color:function(param){
+      return(param.data[0].value.colorValue);
+    },
+        borderWidth:1,
+        lineStyle: {
+          type: 'dashed',
+          width: 2,
+          shadowBlur: 10
+        },
+        label:{show:false}
+      }
+    },
+
+    data : [[{name:'武汉'}, {name:'河南',value:{colorValue:'#fff'}}],
+[{name:'武汉'}, {name:'湖南',value:{colorValue:'#fff'}}],
+[{name:'武汉'}, {name:'安徽',value:{colorValue:'#fff'}}],
+[{name:'武汉'}, {name:'江西',value:{colorValue:'#fff'}}],
+[{name:'武汉'}, {name:'广东',value:{colorValue:'#fff'}}],
+[{name:'武汉'}, {name:'江苏',value:{colorValue:'#fff'}}],
+[{name:'武汉'}, {name:'重庆',value:{colorValue:'#fff'}}],
+[{name:'武汉'}, {name:'四川',value:{colorValue:'#fff'}}],
+[{name:'武汉'}, {name:'山东',value:{colorValue:'#fff'}}],
+[{name:'武汉'}, {name:'浙江',value:{colorValue:'#fff'}}]]},
+    geoCoord:{'武汉': [114.3116,30.59847],
+'河南': [113.7594,34.77171],
+'湖南': [112.9896,28.11827],
+'安徽': [117.3305,31.73429],
+'江西': [115.9154,28.68169],
+'广东': [113.2724,23.13795],
+'江苏': [118.7696,32.06678],
+'重庆': [106.5584,29.56900],
+'四川': [104.0735,30.57754],
+'山东': [117.0274,36.67486],
+'浙江': [120.1595,30.27155]
+    }
+  
+  ,markPoint : {
+        symbol:'emptyCircle',
+      symbolSize :13,
+      effect : {
+        show: true,
+        type: 'scale',
+        shadowBlur : 0
+      },
+      itemStyle:{
+      normal:{
+        label:{show:false},
+        color:'white'
+      },
+      emphasis: {
+        label:{show:false}
+      }
+      },
+      data : [{name:'河南',value: 6,symbol:'emptyCircle'},
+{name:'湖南',value:29,symbol:'emptyCircle'},
+{name:'安徽',value:82,symbol:'emptyCircle'},
+{name:'江西',value:88,symbol:'emptyCircle'},
+{name:'广东',value:66,symbol:'emptyCircle'},
+{name:'江苏',value:65,symbol:'emptyCircle'},
+{name:'重庆',value:68,symbol:'emptyCircle'},
+{name:'四川',value:80,symbol:'emptyCircle'},
+{name:'山东',value: 5,symbol:'emptyCircle'},
+{name:'浙江',value:43,symbol:'emptyCircle'}
+      ]},
+      geoCoord:{'武汉': [114.3116,30.59847],
+'河南': [113.7594,34.77171],
+'湖南': [112.9896,28.11827],
+'安徽': [117.3305,31.73429],
+'江西': [115.9154,28.68169],
+'广东': [113.2724,23.13795],
+'江苏': [118.7696,32.06678],
+'重庆': [106.5584,29.56900],
+'四川': [104.0735,30.57754],
+'山东': [117.0274,36.67486],
+'浙江': [120.1595,30.27155]
+                  }
+                  
+  }]
+}
+;
+  myChart.setOption(optionID_20200603192233_1067934);
+  </script>
+  </body>
+  </html>
