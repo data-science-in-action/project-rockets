@@ -1,0 +1,154 @@
+---
+title: "最终报告"
+author: "常佳琪"
+date: "2020/6/18"
+output: 
+  html_document:
+     code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+```
+
+## 4.3 互相关分析
+
+由前面的理论可知，如果直接用两列数据做互相关分析，会因为存在公共趋势的作用结果导致结果有偏差，所以需要先对数据进行预白化，做到去势。预白化的第一步是用X变量拟合一个ARIMA模型，并计算模型残差；第二步是用X的ARIMA模型对y变量进行过滤。由于本次研究中西藏省和青海省的疫情数量较小，故仅研究除去西藏和青海剩下的省份的迁徙与疫情的互相关分析。结果见下图：
+
+```{r,include = FALSE}
+setwd("./data")
+library(jsonlite);library(rjson);library(RJSONIO)
+library(ggplot2);library(RColorBrewer);library(lubridate)
+library(plyr);library(dplyr);library(rgdal)
+library(sf);library(geojsonio);library(sp);library(ggthemes)
+par(mfrow=c(1,2))
+x<-readOGR("省级行政区.shp",stringsAsFactors=FALSE,encoding="UTF-8")
+prov_map<-fortify(x)
+map=read.csv("map.csv")
+
+totalp=data.frame(id=map$id,pnum=map$lag,
+                  Timelag=cut(map$lag,breaks=c(0,11,21,30),
+                              labels=c("<=10","11-20",">=21"),
+                              order = TRUE,include.lowest = T,right = F))
+ttp<-merge.data.frame(prov_map,totalp,by.prov_map="id",by.totalp="id")
+```
+
+
+
+```{r,include = FALSE}
+totalp1=data.frame(id=map$id,pnum=map$ccf,
+                   correlation=cut(map$ccf,breaks=c(0,0.3,0.4,0.5,0.6,1),
+                                   labels=c("<0.3","0.3-0.4","0.4-0.5","0.5-0.6",">=0.6"),
+                                   order = TRUE,include.lowest = T,right = F))
+
+ttp1<-merge.data.frame(prov_map,totalp1,by.prov_map="id",by.totalp1="id")
+```
+
+```{r ,echo=FALSE,eval=T}
+par(mfrow=c(1,2))
+ggplot()+
+        geom_polygon(data=ttp,aes(x=long,y=lat,group=group,
+                                  fill=Timelag),colour="black",size=0.25)+
+        scale_fill_manual(values = brewer.pal(3,"Blues"))
+ggplot()+
+        geom_polygon(data=ttp1,aes(x=long,y=lat,group=group,
+                                   fill=correlation),colour="black",size=0.25)+
+        scale_fill_manual(values = brewer.pal(5,"Greens"))
+```
+
+## 4.4 ARIMAX模型
+
+You can also embed plots, for example:
+
+|滞后阶数 | Model  |  RMSE  |  MAE   |  AIC  |  BIC  |百分比|
+|:-------:|:------:|:------:|:------:|:-----:|:-----:|:-----:|
+|  1-10   | (1,1,0)|25.66   | 20.26  |282.03 |287.5  |29%|
+|  11-20  | (2,0,0)|51.18   | 41.87  |207.09 |211.54  |53%|
+|  20以上 | (2,0,0)|12.85   | 10.37  |102 |103.99  |18%|
+
+```{r,include = FALSE}
+setwd("./data")
+library(forecast);library(lmtest);library(tseries)
+library(fUnitRoots);library(timeSeries);library(graphics);library(stats)
+sum_cov<-read.csv("新增疫情分类数据.csv",encoding="UTF-8")
+sum_mig<-read.csv("迁出分类.csv",encoding="UTF-8")
+mig_19<-read.csv("迁出分类去年.csv",encoding="UTF-8")
+sum1<-ts(sum_cov$s1) #读取第一类疫情数据
+sum1_34<-sum1[1:37]
+mig1_34<-ts(sum_mig$s1[1:37] )
+mm1<- c(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,mig1_34)   #制作滞后阶数
+mmm1<- embed(mm1,14)
+m1_7<-mmm1[,8]
+f1<-auto.arima(sum1_34, xreg = m1_7)   #ARIMAX模型
+p_m1_7<-c(sum_mig$s1[31:44])      #28:44
+y_m1_7<-c(mig_19$s1[38:51])    #31:44
+fnn1<- forecast(f1, xreg = p_m1_7, h = 14)
+
+sum2<-ts(sum_cov$s2)   #读取第二类疫情数据
+sum2_34<-sum2[1:34]
+mig2_34<-ts(sum_mig$s2[1:34] )    
+mm2<- c(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,mig2_34)   #制作滞后阶数
+mmm2<- embed(mm2,17)
+m2_8<-mmm2[,9]
+m2_11<-mmm2[,12]
+m2_16<-mmm2[,17]
+mmmm2<-cbind(m2_8,m2_11,m2_16)
+f2<-auto.arima(sum2_34, xreg = mmmm2[,3])   #ARIMAX模型
+p_m2_16<-c(sum_mig$s2[19:35])    #正确19:35
+fnn2<- forecast(f2, xreg = p_m2_16, h = 17)
+y_m2_16<-c(mig_19$s2[35:51])
+fnn22<- forecast(f2, xreg = y_m2_16, h = 17)
+
+sum3<-ts(sum_cov$s3)#读取第三类疫情数据
+sum3_37<-sum3[1:37]
+mig3_37<-ts(sum_mig$s3[1:37] )    #读取迁移数据
+mm3<- c(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,mig3_37)   #制作滞后阶数
+mmm3<- embed(mm3,27)
+m3_13<-mmm3[,14]
+m3_15<-mmm3[,16]
+m3_18<-mmm3[,19]
+m3_26<-mmm3[,27]
+mmmm3<-cbind(m3_13,m3_15,m3_18,m3_26)
+f3<-auto.arima(sum3_37, xreg = mmmm3[,4])   #ARIMAX模型
+p_m3_26<-c(sum_mig$s3[12:28])
+fnn3<- forecast(f3, xreg = p_m3_26, h = 17)
+y_m3_26<-c(mig_19$s3[35:51])    #12:28
+plot(forecast(f3, xreg = p_m3_26))
+plot(sum3)
+plot(forecast(f3, xreg = y_m3_26))
+```
+
+```{r ,echo=FALSE,eval=T}
+par(mfrow=c(1,3))
+plot(sum1,ylab = "第一集群观测值")
+plot(sum2,ylab = "第二集群观测值")
+plot(sum3,ylab = "第三集群观测值")
+```
+
+```{r ,echo=FALSE,eval=T}
+par(mfrow=c(2,2))
+
+plot(forecast(f1, xreg = p_m1_7),ylab = "ARIMA模型拟合值")
+plot(forecast(f1, xreg = y_m1_7),ylab = "去年同期预测值")
+
+plot(forecast(f2, xreg = p_m2_16),ylab = "ARIMA模型拟合值")
+plot(forecast(f2, xreg = y_m2_16),ylab = "去年同期预测值")
+
+plot(forecast(f3, xreg = p_m3_26),ylab = "ARIMA模型拟合值")
+plot(forecast(f3, xreg = y_m3_26),ylab = "去年同期预测值")
+```
+从上图中可以看出，
+
+
+# 5 结论与展望
+## 5.1 结论
+1、离武汉的距离、火车趟数、GDP和各省人口数四个指标均与武汉迁到各省的人口呈现出相关关系，其中距离呈现出负相关关系，其余三个指标均与武汉迁到各省人口呈现出正相关关系。  
+2、利用ARIMAX模型，三集群省份武汉封城令可能分别减少465、1356和452人，一共会减少2273(95%置信区间:679，3869)例一代病例，故武汉封城令是有效减少疫情传播的方式之一。
+
+
+## 5.2 建议
+1、由于疫情的重要传染源之一是湖北迁移到各省的人口，迁移量与各省经济水平相关，故应重点防控那些比湖北经济状况好的省份，例如广东和浙江。  
+
+### 5.3 不足
+1、诊断能力和标准的变化可能导致疫情发病率的趋势变化。  
+2、模型未加入湖北非武汉地区的预测情况。
