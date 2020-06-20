@@ -21,7 +21,7 @@ library(jsonlite);library(rjson);library(RJSONIO)
 library(ggplot2);library(RColorBrewer);library(lubridate)
 library(plyr);library(dplyr);library(rgdal)
 library(sf);library(geojsonio);library(sp);library(ggthemes)
-par(mfrow=c(1,2))
+library(ggpubr);library(ggpmisc);library(rstatix)
 x<-readOGR("省级行政区.shp",stringsAsFactors=FALSE,encoding="UTF-8")
 prov_map<-fortify(x)
 map=read.csv("map.csv")
@@ -35,6 +35,7 @@ ttp<-merge.data.frame(prov_map,totalp,by.prov_map="id",by.totalp="id")
 
 
 
+
 ```{r,include = FALSE}
 totalp1=data.frame(id=map$id,pnum=map$ccf,
                    correlation=cut(map$ccf,breaks=c(0,0.3,0.4,0.5,0.6,1),
@@ -44,27 +45,61 @@ totalp1=data.frame(id=map$id,pnum=map$ccf,
 ttp1<-merge.data.frame(prov_map,totalp1,by.prov_map="id",by.totalp1="id")
 ```
 
-```{r ,echo=FALSE,eval=T}
-par(mfrow=c(1,2))
-ggplot()+
+
+从上图可以看出，人口迁移与新冠肺炎新增病例之间存在积极的时间关联。在靠近湖北武汉的省市，比如陕西、重庆、湖南这一圈，时间滞后期都是在10天之内，所以他们对离汉人员是比较敏感的，再看从武汉流入的人口较多的省份，比如浙江、广东和四川，时间滞后期也比较短,尤其是浙江省，是除了湖北以外第一个进入疫情一级相应的省份。从武汉迁往安徽，江苏，进而北上去山东河北的人，这几个省的时滞天数比较长，但时间较长并不意味着这些省份对输入病例的反应较弱。相反，这意味着这些省份累积病例的总体变化不仅是由输入病例驱动的，还通过本地传播感染病例。在远离武汉的地区，如果滞后时间较长，比如黑龙江、海南，通过观察接截止2月29日各省累计病例数，发现累积发病人数往往较高，这可能是由于一开始一代病人确诊的时间长，扩大了向二代或三代病例传播的几率。
+
+右图展示了除西藏、新疆和湖北以外省份的迁徙数据与新增疫情数据之间的互相关关系，可以看出大部分省份的离汉人员与新冠肺炎新增病例有着积极的正相关关系.
+
+```{r ,echo=FALSE,eval=T,fig.width=10,fig.height=3,fig.align="center"}
+p1 <- ggplot()+
         geom_polygon(data=ttp,aes(x=long,y=lat,group=group,
                                   fill=Timelag),colour="black",size=0.25)+
         scale_fill_manual(values = brewer.pal(3,"Blues"))
-ggplot()+
+p2 <- ggplot()+
         geom_polygon(data=ttp1,aes(x=long,y=lat,group=group,
                                    fill=correlation),colour="black",size=0.25)+
         scale_fill_manual(values = brewer.pal(5,"Greens"))
+ggarrange(p1,p2,ncol=2,nrow=1,labels=c("时滞图","互相关系数图"))
 ```
+
+从下图中可以看出，29%的省份的滞后期在10天以内，58%的省份滞后期在11-20天；18%的省份的滞后期为20以上。根据每个省份最显著的滞后期数，把所有省份分成滞后1-10天、滞后11-10天和滞后20天以上三大集群，在下边部分将对每个集群建立一个ARIMAX模型来对疫情数据进行拟合和预测。
+
+
+```{r ,echo=FALSE,eval=T,fig.width=6.6,fig.height=3,fig.align="center"}
+data <- read.csv("./data/new_correlation.csv")
+library(ggplot2)
+library(ggrepel)
+ggplot(data)+ geom_point(aes(lag, ccf), color="grey", size=3)+
+        geom_label_repel(aes(lag, ccf, fill=factor(cluster), 
+                             label=province), fontface="bold", color="white", 
+                         box.padding=unit(0.35, "lines"), point.padding=unit(0.5, "lines"), 
+                         segment.colour = "grey50")+ theme_classic(base_size = 16)
+```
+
+
 
 ## 4.4 ARIMAX模型
 
-You can also embed plots, for example:
+一般建立ARIMAX模型分为四个步骤，第一就是对数据进行处理，并对其进行平稳化检验；第二步是考察处理过的Y变量和输入变量X的互相关关系以确定滞后回归项；第三步是建立ARIMAX模型，确定p,d,q的值；最后一步进行模型检验及预测。对三大集群的疫情数据进行ADF平稳性检验，发现在5%显著性水平下，它们全部通过检验。
+
+
+|  类别   | Dickey-Fuller |  p-value   |  结果  |
+|:-------:|:------------:|:------:|:-----:|
+|  第一集群   |   -3.8212    | 0.0298 |   平稳  |
+|  第二集群   |   -4.6805    | <0.01 |   平稳  | 
+|  第三集群   |   -3.6175    | 0.0453 |   平稳  |  
+
+考察三大集群经过平稳化后的迁移数据和疫情数据的互相关关系，发现分别滞后8阶、滞后16阶与滞后26阶最显著，这也与第一集群是滞后1-10阶汇总数据、第二集群是滞后11-20阶、第三集群是滞后20阶以上的情况吻合。分别利用滞后8阶、滞后16阶与滞后26阶建立三个集群的ARIMAX模型,第一集群建立了一个Arima（1,1,0）的模型，第二集群和第三集群均建立了Arima（2,0,0）的模型，三个模型系数的P值在10%的显著性水平下通过了检验，紧接着进行LB检验，发现三个模型的残差均是独立和随机的序列，最终得到三个模型的信息见下表：
 
 |滞后阶数 | Model  |  RMSE  |  MAE   |  AIC  |  BIC  |百分比|
 |:-------:|:------:|:------:|:------:|:-----:|:-----:|:-----:|
 |  1-10   | (1,1,0)|25.66   | 20.26  |282.03 |287.5  |29%|
 |  11-20  | (2,0,0)|51.18   | 41.87  |207.09 |211.54  |53%|
 |  20以上 | (2,0,0)|12.85   | 10.37  |102 |103.99  |18%|
+
+运用上述建立的ARIMAX模型对疫情数据进行拟合和预测。选取2月15日为疫情转折点，1月10日至转折点前的数据用来建模，预测转折点后的疫情发展情况并与真实观测值进行比较，判断模型准确性。再选用去年同期迁徙数据进行预测，预测值与真实值之间的差距即为武汉封城令的政策效果。
+下图第一行展示了三大集群疫情真实观测值，由于滞后阶数在11-20阶的省份占比个数最多，故可明显看出第二集群疫情人数远高于第一集群和第三集群。第二行展示了利用2020年的迁徙数据建立的ARIMAX模型及其预测值，与各集群真实值相比相差较小，说明模型建立准确。第三行展示了利用2019年农历同期迁徙数据对疫情发展做出的预测，可以看出三大集群去年同期数据预测均有明显的“跃升”趋势，即由于没有武汉封城令的干扰，去年迁移人数必定大于今年迁徙人数，进而预测的疫情感染人数也会有大幅攀升。最终本次研究得到，截止2月29日，第一集群用ARIMAX模型预测出疫情人数是3759人，它95%的置信区间是2501到5018人，真实值是3507人，用去年同期数据预测为3972人，95%的置信区间是2712到5230人；第二集群预的疫情人数是6335人，95%的置信区间疫情人数是6064到6607人，真实值是7053人，用去年同期数据预测为8409人，95%的置信区间是8138到8680人。第三类预测出疫情人数是2441人，95%的置信区间疫情人数是2375到2407人，真实值是2353人，用去年同期数据预测为2805人，95%的置信区间是2739到2872人。
+
 
 ```{r,include = FALSE}
 setwd("./data")
@@ -118,33 +153,26 @@ plot(sum3)
 plot(forecast(f3, xreg = y_m3_26))
 ```
 
-```{r ,echo=FALSE,eval=T}
-par(mfrow=c(1,3))
-plot(sum1,ylab = "第一集群观测值")
-plot(sum2,ylab = "第二集群观测值")
-plot(sum3,ylab = "第三集群观测值")
+
+
+```{r ,echo=FALSE,eval=T,fig.align="center"}
+par(mfrow=c(3,3))
+plot(sum1,ylab = "观测值",xlab="",main="第一集群")
+plot(sum2,main="第二集群",ylab = "",xlab="",)
+plot(sum3,main="第三集群",ylab = "",xlab="",)
+plot(forecast(f1, xreg = p_m1_7),main="第一集群",ylab = "ARIMA模型拟合值")
+plot(forecast(f2, xreg = p_m2_16),main="第二集群")
+plot(forecast(f3, xreg = p_m3_26),main="第三集群")
+plot(forecast(f1, xreg = y_m1_7),main="第一集群",ylab = "去年同期预测值")
+plot(forecast(f2, xreg = y_m2_16),main="第二集群")
+plot(forecast(f3, xreg = y_m3_26),main="第三集群")
 ```
 
-```{r ,echo=FALSE,eval=T}
-par(mfrow=c(2,2))
 
-plot(forecast(f1, xreg = p_m1_7),ylab = "ARIMA模型拟合值")
-plot(forecast(f1, xreg = y_m1_7),ylab = "去年同期预测值")
-
-plot(forecast(f2, xreg = p_m2_16),ylab = "ARIMA模型拟合值")
-plot(forecast(f2, xreg = y_m2_16),ylab = "去年同期预测值")
-
-plot(forecast(f3, xreg = p_m3_26),ylab = "ARIMA模型拟合值")
-plot(forecast(f3, xreg = y_m3_26),ylab = "去年同期预测值")
-```
-从上图中可以看出，
-
-
-# 5 结论与展望
+# 5 结论与不足
 ## 5.1 结论
 1、离武汉的距离、火车趟数、GDP和各省人口数四个指标均与武汉迁到各省的人口呈现出相关关系，其中距离呈现出负相关关系，其余三个指标均与武汉迁到各省人口呈现出正相关关系。  
 2、利用ARIMAX模型，三集群省份武汉封城令可能分别减少465、1356和452人，一共会减少2273(95%置信区间:679，3869)例一代病例，故武汉封城令是有效减少疫情传播的方式之一。
-
 
 ## 5.2 建议
 1、由于疫情的重要传染源之一是湖北迁移到各省的人口，迁移量与各省经济水平相关，故应重点防控那些比湖北经济状况好的省份，例如广东和浙江。  
