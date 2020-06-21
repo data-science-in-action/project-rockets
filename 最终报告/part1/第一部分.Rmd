@@ -4,17 +4,15 @@ author:
     "虞睿灵;  董洁;  常佳琪"  
 date: "2020/06/20"
 output:
+  pdf_document:
+    latex_engine: xelatex
   html_document:
     df_print: paged
-  pdf_document:
-    fig_height: 2.5cm
-    fig_width: 2.5cm
-    latex_engine: xelatex
   word_document: default
 CJKmainfont: Microsoft YaHei
-zihao: 12pt
+fontsize: 12pt
+geometry: "left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm"
 abstract: COVID-19疫情于2020年年初在中国大陆地区快速蔓延，为有效防控疫情，中央切断源头，对湖北武汉市进行全面封城。本文通过相关分析、互相关分析分析离汉人员的分布差异和离汉人员对其他省份疫情的影响，通过构建Arimax模型来评估武汉封城令这一政策对疫情防控的效果。结果表明，离汉人员在一定程度上对其他省份的疫情存在影响，武汉封城令这一政策干预确实有效的减少了疫情传播。
-
 ---
 
 # 1. 引言
