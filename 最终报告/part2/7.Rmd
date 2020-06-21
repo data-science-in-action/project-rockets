@@ -1,0 +1,174 @@
+---
+title: "**政府干预下离汉人员对疫情的影响**"
+author:
+  - 虞睿灵
+  - 董洁
+  - 常佳琪
+documentclass: ctexart
+geometry: "left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm"
+pagestyle: "empty"
+output: rticles::ctex
+classoption: "hyperref,"
+---
+# 1. **引言**
+
+# 2. **理论介绍**
+
+## 2.1 **互相关分析**
+
+## 2.2 **ARIMAX**
+
+# 3 **描述性统计分析**
+## 3.1 **全国确诊数和迁徙人数趋势分析**
+本文主要探究的是武汉迁出人员和确诊病例之间的关系，下图是2020年1月10日-2020年2月29日的武汉是百度迁徙指数和全国除湖北地区以外的新增病例数的时间趋势图，图中红色的虚线代表的是武汉封城政策。由图A可以看出，全国新增病例数在武汉封城之后呈现出快速增长的趋势并很快达到了最高点。而从图B可以看出，武汉封城政策从很大程度上减少了离汉人数，迁徙指数逼近0，从而探讨这一政策的实施是否对新冠疫情的控制有显著作用。
+```{r fig.align="center",eval=T,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,fig.width=6,fig.height=2.5}
+data<-read.csv("./data/新增疫情数据.csv")
+data1<-read.csv("./data/mig.csv")
+attach(data)
+library(ggplot2)
+library(ggpubr)
+p1<- ggplot(data)+geom_line(aes(time,y=cov,fill="this_year"),size=1,shape=2,color="blue")+
+    labs(x="date",y="COVID-19 incidence",fill="")+
+    geom_vline(xintercept=14, linetype="dotted",color="red")+
+    theme(panel.grid.major =element_blank(), panel.grid.minor = element_blank(),
+    panel.background = element_blank(),axis.line = element_line(colour = "black"))
+p2<- ggplot(data1)+geom_line(aes(date,y=this_year,fill="this_year"),size=1,shape=2,color="blue")+
+    labs(x="date",y="Baidu Migration Index",fill="")+
+    geom_vline(xintercept=14, linetype="dotted",color="red")+
+    theme(panel.grid.major =element_blank(), panel.grid.minor = element_blank(),
+    panel.background = element_blank(),axis.line = element_line(colour = "black"))
+ggarrange(p1,p2,ncol=2,labels=c("A","B"))
+```
+
+下图是2020年1月10日-2020年2月2武汉市迁徙指数与去年农历同期武汉市迁徙指数的对比图。由图可以看出，随着春运的到来，武汉迁出人数逐渐增加，在封城前今年的迁出人数甚至比去年还要多，而在采取了封城政策以后，迁徙指数大幅度下降。
+```{r fig.align="center",eval=T,echo=FALSE,warning=FALSE,error=FALSE,message=FALSE,fig.width=4,fig.height=2.5}
+library(readxl)
+library(ggplot2)
+data<-read.csv("./data/mig1.csv")
+ggplot(data,mapping = aes(x=date,y=mig,group=time))+
+    geom_line(aes(linetype=time,color=time),size=1)+
+    theme(legend.position = "right")+
+    geom_vline(xintercept=14, linetype="dotted",color="red")+
+    theme(panel.grid.major =element_blank(), panel.grid.minor = element_blank(),
+    panel.background = element_blank(),axis.line = element_line(colour = "black"))
+```
+
+## 3.2 **各省确诊数和迁徙人数对比分析**
+下图是全国累计确诊情况的分布，所用到的数据是截止2020年2月29日的各省累计确诊数据。由图中可以看出，除湖北外累计确诊最多的是广东省，其次是河南省、浙江省、湖南省、安徽省，由图中颜色分布可以看出，湖北附近的省份颜色较深。
+```{r,include=FALSE}
+library(jsonlite)
+library(rjson)
+library(RJSONIO)
+library(ggplot2)
+library(RColorBrewer)
+library(lubridate)
+library(plyr)
+library(dplyr)
+library(sf)
+library(geojsonio)
+library(sp)
+library(ggthemes)
+library(rgdal)
+x<-readOGR("./data/省级行政区.shp",stringsAsFactors=FALSE,encoding="UTF-8")
+prov_map<-fortify(x)
+map=read.csv("./data/map.csv")
+totalp=data.frame(id=map$id,pnum=map$ncov19,
+                  COVID19=cut(map$ncov19,breaks=c(0,101,501,1000,1349),
+                              labels=c("<=100","101-500","501-999",">=1000"),
+                              order = TRUE,include.lowest = T,right = F))
+ttp<-merge.data.frame(prov_map,totalp,by.prov_map="id",by.totalp="id")
+```
+
+```{r fig.align="center",eval=T,echo=FALSE,error=FALSE,warning=FALSE,message=FALSE,fig.width=6,fig.height=4}
+ggplot()+
+        geom_polygon(data=ttp,aes(x=long,y=lat,group=group,
+                                  fill=COVID19),colour="black",size=0.25)+
+        scale_fill_manual(values = brewer.pal(4,"Reds"))
+```
+
+下图是对离汉人员的去向统计，所统计的是2020年1月10日——2020年2月29日武汉去往各个省的累计迁出人口，由图可以看出，武汉的迁出人员去往河南的最多，其次是湖南、安徽、江西等，人数排名前十的省份大多在湖北周边。
+```{r,include=FALSE}
+library(jsonlite)
+library(rjson)
+library(RJSONIO)
+library(ggplot2)
+library(RColorBrewer)
+library(lubridate)
+library(plyr)
+library(dplyr)
+library(sf)
+library(geojsonio)
+library(sp)
+library(ggthemes)
+library(rgdal)
+x<-readOGR("./data/省级行政区.shp",stringsAsFactors=FALSE,encoding="UTF-8")
+prov_map<-fortify(x)
+map=read.csv("./data/map.csv")
+totalp=data.frame(id=map$id,pnum=map$mig,
+                  migration=cut(map$mig,breaks=c(0,20001,40001,60000,290996.7),
+                            lables=c("<=20000","20001-40000","40001-59999",">=60000"),
+                              order = TRUE,include.lowest = T,right = F))
+ttp<-merge.data.frame(prov_map,totalp,by.prov_map="id",by.totalp="id")
+
+```
+
+
+```{r fig.align="center",eval=T,echo=FALSE,error=FALSE,warning=FALSE,message=FALSE,fig.width=6,fig.height=4}
+ggplot()+
+        geom_polygon(data=ttp,aes(x=long,y=lat,group=group,
+                                  fill=migration),colour="black",size=0.25)+
+        scale_fill_manual(values = brewer.pal(4,"Blues"))
+```
+
+
+# 4. **实证分析**
+
+## 4.1 **相关分析**
+```{r fig.align="center",eval=T,echo=FALSE,error=FALSE,message=FALSE,fig.width=6,fig.height=4}
+data<-read.csv("./data/new_correlation.csv")
+attach(data)
+library(ggplot2)
+library(ggpubr)
+library(rstatix)
+library(ggpmisc)
+theme_set(ggpubr::theme_pubr()+
+            theme(legend.position = "top"))
+library(ggpubr)
+p1<- ggscatter(data, x = "mig", y = "distance",color = "black",
+          add = "reg.line",conf.int = TRUE,    
+          add.params = list(fill = "lightgray")
+)+
+  stat_cor(method = "pearson", 
+           label.x = 3, label.y = 30)
+p2<- ggscatter(data, x = "mig", y = "train",color = "black",
+          add = "reg.line",conf.int = TRUE,    
+          add.params = list(fill = "lightgray")
+)+
+  stat_cor(method = "pearson", 
+           label.x = 3, label.y = 30)
+p3<- ggscatter(data, x = "mig", y = "GDP",color = "black",
+          add = "reg.line",conf.int = TRUE,    
+          add.params = list(fill = "lightgray")
+)+
+  stat_cor(method = "pearson", 
+           label.x = 3, label.y = 30)
+p4<- ggscatter(data, x = "mig", y = "population",color = "black",
+          add = "reg.line",conf.int = TRUE,    
+          add.params = list(fill = "lightgray")
+)+
+  stat_cor(method = "pearson", 
+           label.x = 3, label.y = 30)
+ggarrange(p1,p2,p3,p4,ncol=2,nrow=2,labels=c("A","B","C","D"))
+```
+
+以上是针对可能影响各省从武汉迁入人口数的指标做的相关分析的结果，图A是迁出人口和距离的相关关系图，这里的距离值得是各省省会城市距武汉的距离。从图中可以看出，武汉迁到各省的累计人口与武汉离其省会城市的距离成反比，相关系数为-0.56。图B为迁出人口和火车趟数的相关关系图，火车趟数在一定程度上可以代表该省的交通便利程度，由图可以看出，二者之间呈现出正相关关系，相关系数为0.86。图C 为迁出人口和各省的GDP的相关关系图，地区生产总值反映该地区的经济实力和市场规模，从图中可以看出，武汉签到各省的人口与其地区生产总值呈现出正相关关系，相关系数为0.42. 图D是迁出人口与各省年末总人口的相关关系图，二者之间存在正相关关系，相关系数为0.66.以上所研究的四个指标均与武汉迁到各省的累计人数有相关关系，且其P值均显著。
+
+## 4.2 **格兰杰因果关系检验**
+本文为了分析各省确诊病例与其从武汉迁入的人口总数之间的关系，对二者进行了格兰杰因果关系检验，在检验之前首先对两列时间序列数据的平稳性进行检验，检验得到的结果如下表所示：
+
+|  原假设   |  P值 | 检验结果   |
+|:----------:|:--------:|:----------:|
+|case does not Granger Cause mig|0.9807|不拒绝|
+|mig does not Granger Cause case|0.0184|拒绝|
+
+上表中mig代表的是从武汉迁入的人口总数，case代表的是各省的确诊病例，原假设是前者不是后者的因，检验得到的P值为0.0184，故拒绝原假设，即前者是后者的因。因此，接下来通过互相关分析来进一步探究二者之间的关系。
