@@ -3,9 +3,9 @@ title: "Proposal"
 author: "Rockets"
 date: "2020/4/1"
 output:
-  html_document: default
-  word_document: default
   pdf_document: default
+  word_document: default
+  html_document: default
 pagemargins: 2.5
 fontsize: 12
 ---

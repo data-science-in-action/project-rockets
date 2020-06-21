@@ -1,0 +1,132 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  12,
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Proposal},
+  pdfauthor={Rockets},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{Proposal}
+\author{Rockets}
+\date{2020/4/1}
+
+\begin{document}
+\maketitle
+
+\hypertarget{ux4e00.ux7814ux7a76ux80ccux666f}{%
+\section{一.研究背景}\label{ux4e00.ux7814ux7a76ux80ccux666f}}
+
+  2019年底开始的新型冠状病毒率先在武汉爆发，并以我们始料未及的速度传播到其他地区和国家。我国各地疾病预防控制中心相继启动一级应急响应。由于各地对疫情的反应速度及采取的应对措施不用，疫情在各地的传播方式和速度也不一致。因此，研究我国各地疫情的传播趋势能较好的反映出各地政府公共卫生干预的效果。
+
+\hypertarget{ux4e8c.ux7814ux7a76ux95eeux9898}{%
+\section{二.研究问题}\label{ux4e8c.ux7814ux7a76ux95eeux9898}}
+
+  我们主要研究新冠肺炎在各地的实时传播强度，测度不同交通工具对疫情传播的影响，同时量化政府的干预措施对疫情发展的影响。
+
+\hypertarget{ux4e09.ux6570ux636eux6765ux6e90}{%
+\section{三.数据来源}\label{ux4e09.ux6570ux636eux6765ux6e90}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  迁徙数据来源于\href{http://qianxi.baidu.com/}{百度地图慧眼}。\\
+\item
+  新型冠状病毒疫情数据来源于狗熊会（公众号）。\\
+\item
+  航空旅行数据来源于\href{https://data.variflight.com/}{飞常准大数据平台}。\\
+\item
+  铁路旅行数据来源于\href{http://shike.gaotie.cn/}{高铁网车次查询}。\\
+\item
+  公路旅行数据来源于\href{https://www.qichezhan.cn/}{汽车网汽车时刻查询}。
+\end{enumerate}
+
+\hypertarget{ux56db.ux7814ux7a76ux65b9ux6cd5}{%
+\section{四.研究方法}\label{ux56db.ux7814ux7a76ux65b9ux6cd5}}
+
+  在本篇研究中，我们将采用动态模型对疫情传播进行分析，并采用逐点回归方法计算参数（具体方法根据后续研究确定）。
+
+\hypertarget{ux4e94.ux95eeux9898ux53caux6311ux6218}{%
+\section{五.问题及挑战}\label{ux4e94.ux95eeux9898ux53caux6311ux6218}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  研究方法难。在有限时间里学习逐点回归方法。由于此法是属于非参数估计下的方法，有必要首先熟悉非参数方法领域。
+\item
+  数据整理难。我们需要整理从武汉到达全国各地的公路、铁路和航空数据及迁出数据，此项工作较繁琐，耗费较长。
+\item
+  模型理解难。除逐点回归方法外，我们仍需通篇理解林教授的动态模型思路，而由于此篇文章为外文文献，且多涉及数学领域，对我们有一定难度。
+\end{enumerate}
+
+\hypertarget{ux516d.ux89e3ux51b3ux529eux6cd5}{%
+\section{六.解决办法}\label{ux516d.ux89e3ux51b3ux529eux6cd5}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  努力查找有关逐点回归的各种文献。
+\item
+  对于数据整理问题，小组内讨论分工，加大时间投入最终整理出所需数据。
+\item
+  对于模型理解问题，还需阅读相关文献，组员之间积极讨论，整理模型思路框架，必要时请教老师。
+\end{enumerate}
+
+\end{document}
