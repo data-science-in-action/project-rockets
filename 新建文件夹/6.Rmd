@@ -1,0 +1,79 @@
+---
+title: "政府干预下离汉人员对疫情的影响"
+author: "常佳琪 董洁 虞睿灵"
+CJKmainfont: Microsoft YaHei
+date: '2020-05-28'
+output:
+  pdf_document:
+    includes:
+      header-includes:
+        - \usepackage{xeCJK}
+    keep_tex: yes
+    latex_engine: xelatex
+fontsize: 12pt
+documentclass: article
+papersize: a5
+---
+
+# 引言
+
+# 理论介绍
+
+## 互相关分析
+
+## ARIMAX
+
+# 描述性统计分析
+
+# 实证分析
+
+## 互相关分析
+```{r,eval=T,echo=FALSE,error=FALSE,message=FALSE}
+data<-read.csv("./data/new_correlation.csv")
+attach(data)
+library(ggplot2)
+library(ggpubr)
+library(rstatix)
+library(ggpmisc)
+theme_set(ggpubr::theme_pubr()+
+            theme(legend.position = "top"))
+library(ggpubr)
+p1<- ggscatter(data, x = "mig", y = "distance",color = "black",
+          add = "reg.line",conf.int = TRUE,    
+          add.params = list(fill = "lightgray")
+)+
+  stat_cor(method = "pearson", 
+           label.x = 3, label.y = 30)
+p2<- ggscatter(data, x = "mig", y = "train",color = "black",
+          add = "reg.line",conf.int = TRUE,    
+          add.params = list(fill = "lightgray")
+)+
+  stat_cor(method = "pearson", 
+           label.x = 3, label.y = 30)
+p3<- ggscatter(data, x = "mig", y = "GDP",color = "black",
+          add = "reg.line",conf.int = TRUE,    
+          add.params = list(fill = "lightgray")
+)+
+  stat_cor(method = "pearson", 
+           label.x = 3, label.y = 30)
+p4<- ggscatter(data, x = "mig", y = "population",color = "black",
+          add = "reg.line",conf.int = TRUE,    
+          add.params = list(fill = "lightgray")
+)+
+  stat_cor(method = "pearson", 
+           label.x = 3, label.y = 30)
+ggarrange(p1,p2,p3,p4,ncol=2,nrow=2,labels=c("A","B","C","D"))
+```
+
+## 格兰杰因果关系检验
+
+|  原假设   |  P值 | 检验结果   |
+|:----------:|:--------:|:----------:|
+|case does not Granger Cause mig|0.9807|不拒绝|
+|mig does not Granger Cause case|0.0184|拒绝|
+
+## 互相关分析
+
+## ARIMAX
+
+# 结论与展望
